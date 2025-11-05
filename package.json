@@ -1,0 +1,35 @@
+{
+  "name": "erp-otica-davi",
+  "version": "1.0.0",
+  "description": "Sistema ERP completo para gestão de óticas",
+  "main": "index.js",
+  "scripts": {
+    "setup": "node setup.js",
+    "setup-db": "node scripts/setup-database.js",
+    "setup-supabase": "node scripts/setup-supabase.js",
+    "init-db": "node scripts/init-database.js",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm start",
+    "frontend-only": "node scripts/start-frontend-only.js",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "build": "cd backend && npm run build && cd ../frontend && npm run build",
+    "test": "cd backend && npm test && cd ../frontend && npm test",
+    "start:supabase": "npm run setup-supabase && npm run install:all && npm run init-db && npm run dev",
+    "start:complete": "npm run setup-db && npm run install:all && npm run init-db && npm run dev",
+    "start:fase1": "npm run setup && npm run install:all && npm run init-db && npm run dev"
+  },
+  "keywords": [
+    "erp",
+    "otica",
+    "gestao",
+    "vendas",
+    "estoque",
+    "prescricoes"
+  ],
+  "author": "Equipe ERP Ótica Davi",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

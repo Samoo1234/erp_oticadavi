@@ -1,0 +1,39 @@
+# ========================================
+# CONFIGURAÇÃO DE INTEGRAÇÃO
+# Sistema de Agendamento → ERP Ótica
+# ========================================
+
+# API Keys para integração com sistemas externos
+# Separe múltiplas chaves com vírgula (,)
+# Gere uma chave segura com: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+INTEGRATION_API_KEYS=sua_api_key_aqui,outra_key_opcional
+
+# ========================================
+# INSTRUÇÕES
+# ========================================
+# 
+# 1. Adicione essa linha no arquivo .env do backend do ERP
+# 
+# 2. Gere uma API Key segura:
+#    node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+# 
+# 3. Substitua 'sua_api_key_aqui' pela chave gerada
+# 
+# 4. Reinicie o servidor:
+#    npm run dev
+# 
+# 5. Use a mesma chave no sistema de agendamento (Edge Function)
+# 
+# ========================================
+# SEGURANÇA
+# ========================================
+# 
+# - NUNCA commite o arquivo .env no Git
+# - Use chaves longas e aleatórias (mínimo 32 caracteres)
+# - Rotacione as chaves periodicamente
+# - Use HTTPS em produção
+# - Configure rate limiting
+# - Monitore logs de acesso
+# 
+# ========================================
+
