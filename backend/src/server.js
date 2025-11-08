@@ -134,6 +134,9 @@ const startServer = async () => {
   }
 };
 
-startServer();
+// Iniciar servidor apenas se não estiver em ambiente serverless (Vercel)
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  startServer();
+}
 
 module.exports = app;

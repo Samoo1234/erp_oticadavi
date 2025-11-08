@@ -12,6 +12,7 @@ pnpm-debug.log*
 .env.test.local
 .env.production.local
 backend/.env
+frontend/.env
 
 # Build outputs
 dist/
@@ -36,4 +37,9 @@ coverage/
 *.pem
 .vercel
 .next/
+
+# Scripts de migração com dados sensíveis
+backend/migrate-visioncare-patients.js
+backend/sync-supabase-clients.js
+backend/test-sync.js
 

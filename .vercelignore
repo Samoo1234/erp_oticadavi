@@ -1,0 +1,35 @@
+# Arquivos que não devem ser incluídos no deploy
+
+# Environment files (usar variáveis de ambiente da Vercel)
+.env
+.env.local
+backend/.env
+
+# Documentação
+docs/
+*.md
+!README.md
+!DEPLOY.md
+
+# Scripts de desenvolvimento
+scripts/
+backend/migrate-visioncare-patients.js
+backend/sync-supabase-clients.js
+backend/test-sync.js
+backend/integration-examples/
+
+# Arquivos de desenvolvimento
+nodemon.json
+.eslintrc
+.prettierrc
+
+# Tests
+**/*.test.js
+**/*.spec.js
+__tests__/
+coverage/
+
+# IDE
+.vscode/
+.idea/
+

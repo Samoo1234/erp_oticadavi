@@ -1,149 +1,296 @@
-# ERP Ótica Davi - Sistema de Gestão para Ótica
+# 🏪 ERP Ótica Davi
 
-## Visão Geral
-Sistema ERP completo desenvolvido especificamente para óticas, oferecendo gestão integrada de clientes, produtos, prescrições médicas, vendas e estoque.
+Sistema completo de gestão para ótica, incluindo controle de vendas, estoque, clientes, prescrições, TSO (Tabela de Solicitação de Orçamento) e emissão de notas fiscais.
 
-## Funcionalidades Principais
+---
 
-### 1. Gestão de Clientes
+## 🚀 Tecnologias
+
+### Backend
+- **Node.js** + **Express**
+- **Supabase** (PostgreSQL)
+- **JWT** para autenticação
+- **Swagger** para documentação da API
+
+### Frontend
+- **React** + **TypeScript**
+- **Tailwind CSS**
+- **React Query** para cache
+- **React Hook Form** para formulários
+
+---
+
+## 📦 Funcionalidades
+
+### ✅ Gestão de Vendas
+- Criar, editar e consultar vendas
+- Adicionar múltiplos produtos por venda
+- Calcular descontos e totais automaticamente
+- Integração com Stone API para pagamentos (PIX, Débito, Crédito, Dinheiro)
+- Histórico completo de vendas
+
+### ✅ Gestão de Clientes
 - Cadastro completo de clientes
 - Histórico de compras
-- Prescrições médicas
-- Controle de fidelidade
+- Integração com sistema VisionCare (sincronização de pacientes)
 
-### 2. Catálogo de Produtos
-- Óculos de grau e sol
-- Lentes (monofocais, bifocais, progressivas)
-- Acessórios (estojos, cordões, etc.)
-- Controle de marcas e fornecedores
+### ✅ Gestão de Produtos
+- Cadastro de produtos com foto
+- Controle de estoque
+- Movimentações de entrada e saída
+- Alertas de estoque baixo
 
-### 3. Sistema de Prescrições
-- Digitalização de receitas médicas
-- Cálculo automático de lentes
-- Histórico de prescrições por cliente
-
-### 4. Vendas e Orçamentos
-- Criação de orçamentos
-- Processo de venda completo
-- Controle de pagamentos
-- Emissão de notas fiscais
-
-### 5. Controle de Estoque
-- Entrada e saída de produtos
+### ✅ Gestão de Prescrições
+- Cadastro de prescrições oftalmológicas
+- Histórico por cliente
 - Controle de validade
-- Alertas de reposição
-- Inventário físico
 
-### 6. Relatórios e Analytics
-- Dashboard executivo
-- Relatórios de vendas
-- Análise de performance
-- Indicadores de negócio
+### ✅ TSO (Tabela de Solicitação de Orçamento)
+- Criar TSO para clientes
+- Definir tipos de lente (longe, perto, multifocal)
+- Calcular orçamentos automaticamente
 
-## Tecnologias Utilizadas
-- **Backend**: Node.js + Express
-- **Frontend**: React + TypeScript
-- **Banco de Dados**: PostgreSQL
-- **Autenticação**: JWT
-- **Documentação**: Swagger
+### ✅ Notas Fiscais
+- Emissão de NF-e
+- Controle de status (pendente, emitida, cancelada)
+- Exportação em XML
 
-## Estrutura do Projeto
-```
-erp-otica/
-├── backend/
-│   ├── src/
-│   │   ├── controllers/
-│   │   ├── models/
-│   │   ├── routes/
-│   │   ├── middleware/
-│   │   └── utils/
-│   ├── package.json
-│   └── README.md
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   └── utils/
-│   ├── package.json
-│   └── README.md
-└── docs/
-    ├── api/
-    └── user-guide/
-```
+### ✅ Relatórios
+- Vendas por período
+- Produtos mais vendidos
+- Movimentação de estoque
+- Desempenho por vendedor
 
-## Instalação e Configuração
+### ✅ Usuários e Permissões
+- Sistema de autenticação
+- Níveis de acesso (admin, vendedor, operador)
+- Controle de sessões
 
-### Opção 1: Com Supabase (Recomendado) 🚀
+---
+
+## 🛠️ Instalação Local
+
+### Pré-requisitos
+- **Node.js** 18+
+- **npm** ou **yarn**
+- **Conta no Supabase**
+
+### 1️⃣ Clone o repositório
 
 ```bash
-# 1. Clone o repositório
-git clone https://github.com/seu-usuario/erp-otica-davi.git
-cd erp-otica-davi
-
-# 2. Configure o Supabase
-npm run setup-supabase
-
-# 3. Siga as instruções para criar projeto no Supabase
-# 4. Edite backend/.env com suas credenciais
-
-# 5. Instale as dependências e inicie
-npm run start:supabase
+git clone https://github.com/Samoo1234/erp_oticadavi.git
+cd erp_oticadavi
 ```
 
-### Opção 2: Com PostgreSQL Local
+### 2️⃣ Configure o Backend
 
 ```bash
-# 1. Clone o repositório
-git clone https://github.com/seu-usuario/erp-otica-davi.git
-cd erp-otica-davi
+cd backend
+npm install
 
-# 2. Instale as dependências
-npm run install:all
+# Copiar arquivo de exemplo e configurar variáveis
+cp .env.example .env
+# Edite o .env com suas credenciais do Supabase
+```
 
-# 3. Configure o banco de dados
-npm run init-db
+**Variáveis obrigatórias no `.env`:**
 
-# 4. Inicie o sistema
+```env
+SUPABASE_URL=sua-url-aqui
+SUPABASE_ANON_KEY=sua-chave-aqui
+SUPABASE_SERVICE_KEY=sua-service-key-aqui
+JWT_SECRET=sua-senha-secreta-min-32-caracteres
+```
+
+### 3️⃣ Configure o Frontend
+
+```bash
+cd ../frontend
+npm install
+
+# Criar arquivo .env
+echo "REACT_APP_API_URL=http://localhost:3001/api/v1" > .env
+```
+
+### 4️⃣ Configure o Banco de Dados
+
+Execute o schema SQL no Supabase SQL Editor:
+
+```bash
+# Copie o conteúdo de backend/supabase-schema.sql
+# Cole no SQL Editor do Supabase e execute
+```
+
+### 5️⃣ Inicie o Sistema
+
+**Terminal 1 (Backend):**
+```bash
+cd backend
 npm run dev
 ```
 
-### Pré-requisitos
-- Node.js 18+
-- Supabase (recomendado) ou PostgreSQL 13+
-- npm ou yarn
+**Terminal 2 (Frontend):**
+```bash
+cd frontend
+npm start
+```
 
-### Scripts Disponíveis
-- `npm run frontend-only` - Inicia apenas o frontend (sem banco)
-- `npm run setup-supabase` - Configuração do Supabase
-- `npm run install:all` - Instala todas as dependências
-- `npm run init-db` - Inicializa o banco de dados
-- `npm run dev` - Inicia backend e frontend
-- `npm run start:supabase` - Configuração completa com Supabase
+Acesse: **http://localhost:3000**
 
-## Estudo de Caso
+---
 
-### Cenário
-Ótica Davi é uma empresa familiar com 5 lojas físicas e 1 e-commerce, atendendo aproximadamente 3.500 clientes ativos. A empresa enfrenta desafios na gestão de:
+## 🌐 Deploy na Vercel
 
-1. **Prescrições médicas**: Processo manual e propenso a erros
-2. **Controle de estoque**: Dificuldade para rastrear produtos entre as 5 lojas
-3. **Gestão de clientes**: Informações dispersas em planilhas
-4. **Relatórios**: Dados não centralizados e desatualizados
+Veja o guia completo em **[DEPLOY.md](./DEPLOY.md)**
 
-### Solução Proposta
-O ERP Ótica Davi centraliza todas as operações em uma plataforma única, oferecendo:
+### Resumo rápido:
 
-- **Automação de processos**: Redução de 70% no tempo de processamento de pedidos
-- **Integração entre as 5 lojas**: Visibilidade completa do estoque
-- **Gestão de prescrições**: Digitalização e cálculo automático
-- **Relatórios em tempo real**: Tomada de decisão baseada em dados
+1. Push para GitHub
+2. Importar projeto na Vercel
+3. Configurar variáveis de ambiente
+4. Deploy automático! 🚀
 
-### Benefícios Esperados
-- Aumento de 30% na produtividade
-- Redução de 40% nos erros operacionais
-- Melhoria de 60% no atendimento ao cliente
-- Economia de 30% nos custos operacionais
+---
 
-## Contato
-Para mais informações sobre o projeto, entre em contato através do repositório.
+## 📚 Documentação da API
+
+Após iniciar o backend, acesse:
+
+```
+http://localhost:3001/api-docs
+```
+
+Documentação interativa com Swagger UI.
+
+---
+
+## 🔐 Primeiro Acesso
+
+Após configurar o banco, crie um usuário administrador via SQL:
+
+```sql
+INSERT INTO users (name, email, password, role, is_active)
+VALUES (
+  'Administrador',
+  'admin@oticadavi.com',
+  '$2a$10$SEU_HASH_BCRYPT_AQUI',  -- Use bcrypt para gerar o hash
+  'admin',
+  true
+);
+```
+
+**Gerar hash bcrypt:**
+- Online: https://bcrypt-generator.com/ (10 rounds)
+- Ou use Node.js:
+  ```javascript
+  const bcrypt = require('bcryptjs');
+  console.log(bcrypt.hashSync('sua-senha', 10));
+  ```
+
+---
+
+## 🔄 Integração VisionCare
+
+Para sincronizar clientes do sistema VisionCare:
+
+1. Configure as variáveis no `.env`:
+   ```env
+   VISIONCARE_SUPABASE_URL=...
+   VISIONCARE_ANON_KEY=...
+   VISIONCARE_SERVICE_KEY=...
+   INTEGRATION_API_KEYS=chave-secreta-webhook
+   ```
+
+2. Execute a migração inicial:
+   ```bash
+   cd backend
+   node migrate-visioncare-patients.js
+   ```
+
+3. Configure o webhook no Supabase VisionCare (veja `DEPLOY.md`)
+
+---
+
+## 🗂️ Estrutura do Projeto
+
+```
+erp-oticadavi/
+├── backend/
+│   ├── api/                  # Vercel serverless entry point
+│   ├── src/
+│   │   ├── controllers/      # Lógica de negócio
+│   │   ├── routes/           # Rotas da API
+│   │   ├── middleware/       # Auth, validação, etc.
+│   │   ├── config/           # Configurações (Supabase, etc.)
+│   │   └── utils/            # Utilidades (caseConverter, etc.)
+│   ├── database/             # Schemas SQL
+│   └── .env.example          # Template de variáveis
+│
+├── frontend/
+│   ├── src/
+│   │   ├── pages/            # Páginas React
+│   │   ├── components/       # Componentes reutilizáveis
+│   │   ├── contexts/         # Context API (Auth)
+│   │   ├── services/         # API client (Axios)
+│   │   └── types/            # TypeScript types
+│   └── public/               # Assets estáticos
+│
+├── docs/                     # Documentação técnica
+├── vercel.json               # Configuração do monorepo
+├── DEPLOY.md                 # Guia de deploy
+└── README.md                 # Este arquivo
+```
+
+---
+
+## 🧪 Testes
+
+```bash
+# Backend
+cd backend
+npm test
+
+# Frontend
+cd frontend
+npm test
+```
+
+---
+
+## 🤝 Contribuindo
+
+1. Fork o projeto
+2. Crie uma branch: `git checkout -b feature/nova-funcionalidade`
+3. Commit suas mudanças: `git commit -m 'Adiciona nova funcionalidade'`
+4. Push para a branch: `git push origin feature/nova-funcionalidade`
+5. Abra um Pull Request
+
+---
+
+## 📝 Licença
+
+Este projeto é proprietário e de uso exclusivo da **Ótica Davi**.
+
+---
+
+## 📧 Contato
+
+**Ótica Davi**
+- 🌐 Website: [em breve]
+- 📧 Email: contato@oticadavi.com
+- 📱 WhatsApp: [número]
+
+---
+
+## 🎯 Roadmap
+
+- [ ] App mobile (React Native)
+- [ ] Módulo de laboratório
+- [ ] Integração com mais operadoras de cartão
+- [ ] Dashboard avançado com BI
+- [ ] Módulo de marketing (SMS/Email)
+- [ ] Programa de fidelidade
+
+---
+
+**Desenvolvido com ❤️ para Ótica Davi** 👓
