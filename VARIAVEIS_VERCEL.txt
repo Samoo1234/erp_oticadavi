@@ -1,0 +1,163 @@
+================================================================================
+  VARIÁVEIS DE AMBIENTE PARA VERCEL - ERP ÓTICA DAVI
+================================================================================
+
+IMPORTANTE: Copie e cole estas variáveis na seção "Environment Variables" 
+do seu projeto na Vercel (Settings > Environment Variables)
+
+================================================================================
+  BACKEND (API) - OBRIGATÓRIAS
+================================================================================
+
+# ============= SUPABASE ERP =============
+SUPABASE_URL=https://seu-projeto-erp.supabase.co
+SUPABASE_ANON_KEY=sua-anon-key-do-supabase-aqui
+SUPABASE_SERVICE_KEY=sua-service-role-key-do-supabase-aqui
+
+# ============= JWT =============
+JWT_SECRET=gere-uma-senha-super-secreta-com-no-minimo-32-caracteres-aqui
+JWT_EXPIRES_IN=7d
+
+# ============= FRONTEND URL =============
+# ATENÇÃO: Substitua pela URL real que a Vercel fornecer após o primeiro deploy
+FRONTEND_URL=https://seu-projeto.vercel.app
+
+# ============= NODE =============
+NODE_ENV=production
+
+
+================================================================================
+  BACKEND (API) - OPCIONAIS (Stone API para pagamentos)
+================================================================================
+
+# ============= STONE API (Pagamentos) =============
+# Só configure se você tiver conta na Stone
+STONE_API_KEY=sua-stone-api-key-aqui
+STONE_API_URL=https://api.stone.com.br
+
+
+================================================================================
+  BACKEND (API) - OPCIONAIS (Integração VisionCare)
+================================================================================
+
+# ============= INTEGRAÇÃO VISIONCARE =============
+# Só configure se quiser sincronizar clientes do VisionCare
+VISIONCARE_SUPABASE_URL=https://seu-projeto-visioncare.supabase.co
+VISIONCARE_ANON_KEY=sua-visioncare-anon-key-aqui
+VISIONCARE_SERVICE_KEY=sua-visioncare-service-key-aqui
+
+# ============= API KEYS PARA WEBHOOK =============
+# Gere uma chave secreta aleatória (mínimo 32 caracteres)
+INTEGRATION_API_KEYS=chave-secreta-para-webhook-aqui
+
+# ============= ERP BASE URL =============
+# ATENÇÃO: Substitua pela URL real que a Vercel fornecer
+ERP_BASE_URL=https://seu-projeto.vercel.app/api/v1
+
+
+================================================================================
+  FRONTEND - OBRIGATÓRIAS
+================================================================================
+
+# ============= API URL =============
+# ATENÇÃO: Substitua pela URL real que a Vercel fornecer
+REACT_APP_API_URL=https://seu-projeto.vercel.app/api/v1
+
+# ============= AMBIENTE =============
+REACT_APP_ENVIRONMENT=production
+
+
+================================================================================
+  COMO OBTER AS CREDENCIAIS DO SUPABASE
+================================================================================
+
+1. Acesse: https://supabase.com/dashboard
+2. Selecione seu projeto ERP
+3. Vá em: Settings > API
+4. Copie:
+   - Project URL → SUPABASE_URL
+   - anon/public → SUPABASE_ANON_KEY
+   - service_role → SUPABASE_SERVICE_KEY (⚠️ NUNCA exponha esta chave!)
+
+
+================================================================================
+  COMO GERAR O JWT_SECRET
+================================================================================
+
+Opção 1 - Node.js (execute no terminal):
+  node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+Opção 2 - Online:
+  https://www.random.org/strings/?num=1&len=64&digits=on&upperalpha=on&loweralpha=on&unique=on&format=html&rnd=new
+
+Opção 3 - PowerShell:
+  -join ((65..90) + (97..122) + (48..57) | Get-Random -Count 32 | ForEach-Object {[char]$_})
+
+
+================================================================================
+  PASSOS APÓS CONFIGURAR AS VARIÁVEIS
+================================================================================
+
+1. ✅ Configure TODAS as variáveis obrigatórias na Vercel
+
+2. ✅ Clique em "Redeploy" no dashboard da Vercel
+
+3. ✅ Após o redeploy, ATUALIZE as URLs:
+   - FRONTEND_URL com a URL real da Vercel
+   - ERP_BASE_URL com a URL real da Vercel + /api/v1
+   - REACT_APP_API_URL com a URL real da Vercel + /api/v1
+
+4. ✅ Clique em "Redeploy" novamente para aplicar as URLs corretas
+
+5. ✅ Crie o usuário administrador no Supabase SQL Editor:
+
+   -- Gere o hash bcrypt da senha em: https://bcrypt-generator.com/ (10 rounds)
+   
+   INSERT INTO users (name, email, password, role, is_active, created_at, updated_at)
+   VALUES (
+     'Administrador',
+     'admin@oticadavi.com',
+     '$2a$10$SEU_HASH_BCRYPT_AQUI',
+     'admin',
+     true,
+     NOW(),
+     NOW()
+   );
+
+6. ✅ Acesse seu sistema e faça login!
+
+
+================================================================================
+  EXEMPLO DE URL FINAL
+================================================================================
+
+Se sua URL da Vercel for: https://erp-oticadavi.vercel.app
+
+Então configure:
+  FRONTEND_URL=https://erp-oticadavi.vercel.app
+  ERP_BASE_URL=https://erp-oticadavi.vercel.app/api/v1
+  REACT_APP_API_URL=https://erp-oticadavi.vercel.app/api/v1
+
+
+================================================================================
+  DÚVIDAS?
+================================================================================
+
+Consulte: DEPLOY.md (guia completo de deploy)
+
+Documentação Vercel: https://vercel.com/docs/environment-variables
+Documentação Supabase: https://supabase.com/docs/guides/api
+
+
+================================================================================
+  ⚠️ SEGURANÇA
+================================================================================
+
+❌ NUNCA commite este arquivo com valores reais no Git!
+❌ NUNCA compartilhe SUPABASE_SERVICE_KEY ou JWT_SECRET publicamente!
+✅ Use variáveis de ambiente da Vercel (já são criptografadas)
+✅ Rotacione as chaves periodicamente
+
+
+================================================================================
+
