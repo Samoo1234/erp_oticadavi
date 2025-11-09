@@ -239,6 +239,7 @@ export const Users: React.FC = () => {
 
   // Função para excluir usuário
   const handleDeleteUser = async (userId: string) => {
+    // eslint-disable-next-line no-restricted-globals
     if (!window.confirm('Tem certeza que deseja excluir este usuário?')) {
       return;
     }

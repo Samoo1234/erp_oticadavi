@@ -334,6 +334,7 @@ export const Clients: React.FC = () => {
   };
 
   const handleDeleteClient = async (client: Client) => {
+    // eslint-disable-next-line no-restricted-globals
     if (!confirm(`Tem certeza que deseja excluir o cliente "${client.name}"?`)) {
       return;
     }

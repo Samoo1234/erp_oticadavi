@@ -167,6 +167,7 @@ export const Products: React.FC = () => {
   };
 
   const handleDeleteProduct = async (product: Product) => {
+    // eslint-disable-next-line no-restricted-globals
     if (!window.confirm(`Excluir o produto "${product.name}"? Essa ação não pode ser desfeita.`)) return;
     try {
       const res = await api.delete(`/products/${product.id}`);

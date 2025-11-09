@@ -457,6 +457,7 @@ export const Sales: React.FC = () => {
   };
 
   const handleCancelSale = async (sale: any) => {
+    // eslint-disable-next-line no-restricted-globals
     if (!window.confirm('Tem certeza que deseja cancelar esta venda?')) return;
     
     try {
@@ -474,6 +475,7 @@ export const Sales: React.FC = () => {
   };
 
   const handleConfirmSale = async (sale: any) => {
+    // eslint-disable-next-line no-restricted-globals
     if (!window.confirm('Tem certeza que deseja confirmar esta venda?')) return;
     
     try {
