@@ -5,18 +5,13 @@
 .env.local
 backend/.env
 
-# Documentação
+# Documentação geral (não essencial para o deploy)
 docs/
-*.md
-!README.md
-!DEPLOY.md
 
-# Scripts de desenvolvimento
-scripts/
+# Scripts de desenvolvimento e migração
 backend/migrate-visioncare-patients.js
 backend/sync-supabase-clients.js
 backend/test-sync.js
-backend/integration-examples/
 
 # Arquivos de desenvolvimento
 nodemon.json
