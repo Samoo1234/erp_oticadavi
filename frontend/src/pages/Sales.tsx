@@ -21,6 +21,7 @@ import {
   MapPin
 } from 'lucide-react';
 import { api } from '../services/api';
+import { buscarClientesCentral, ClienteERP } from '../services/supabaseCentral';
 
 // Tipos
 type Client = {
@@ -147,24 +148,15 @@ export const Sales: React.FC = () => {
     securityCode: ''
   });
 
-  // Buscar clientes do backend
+  // Buscar clientes do banco central
   const fetchClients = async (search: string = '') => {
     try {
       setLoading(true);
-      const params: any = { limit: 50 };
-      if (search) params.search = search;
-      
-      const res = await api.get('/clients', { params });
-      const payload = res.data?.data;
-      setClients(payload?.clients || []);
+      const clientesCentral = await buscarClientesCentral(search, 50);
+      setClients(clientesCentral);
     } catch (e: any) {
-      // Não mostrar erro no console se o backend não estiver disponível
-      if (e.code !== 'ECONNABORTED' && e.code !== 'ERR_NETWORK' && !e.message?.includes('Network Error')) {
-        // Apenas logar erros do servidor (500, etc) se necessário
-        setClients([]);
-      } else {
-        setClients([]);
-      }
+      console.error('Erro ao buscar clientes do banco central:', e);
+      setClients([]);
     } finally {
       setLoading(false);
     }

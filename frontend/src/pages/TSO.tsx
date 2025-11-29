@@ -15,6 +15,7 @@ import {
   MapPin
 } from 'lucide-react';
 import { api } from '../services/api';
+import { buscarClientesCentral } from '../services/supabaseCentral';
 
 // Dados mockados removidos - agora carregamos do backend
 
@@ -54,8 +55,8 @@ type TSO = {
       leftEye: { sphere: number; cylinder: number; axis: number; dp: number; altura: number; dnp: number };
     };
     perto: {
-      rightEye: { sphere: number; cylinder: number; axis: number; dp: number; altura: number };
-      leftEye: { sphere: number; cylinder: number; axis: number; dp: number; altura: number };
+      rightEye: { sphere: number; cylinder: number; axis: number; dp: number; altura: number; dnp?: number };
+      leftEye: { sphere: number; cylinder: number; axis: number; dp: number; altura: number; dnp?: number };
     };
   };
   frame: {
@@ -104,8 +105,8 @@ export const TSO: React.FC = () => {
         leftEye: { sphere: '', cylinder: '', axis: '', dp: '', altura: '', dnp: '' }
       },
       perto: {
-        rightEye: { sphere: '', cylinder: '', axis: '', dp: '', altura: '' },
-        leftEye: { sphere: '', cylinder: '', axis: '', dp: '', altura: '' }
+        rightEye: { sphere: '', cylinder: '', axis: '', dp: '', altura: '', dnp: '' },
+        leftEye: { sphere: '', cylinder: '', axis: '', dp: '', altura: '', dnp: '' }
       }
     },
     frame: {
@@ -124,18 +125,15 @@ export const TSO: React.FC = () => {
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  // Buscar clientes do backend
+  // Buscar clientes do banco central
   const fetchClients = async (search: string = '') => {
     try {
       setLoading(true);
-      const params: any = { limit: 50 };
-      if (search) params.search = search;
-      
-      const res = await api.get('/clients', { params });
-      const payload = res.data?.data;
-      setClients(payload?.clients || []);
+      const clientesCentral = await buscarClientesCentral(search, 50);
+      setClients(clientesCentral);
     } catch (e) {
-      console.error('Erro ao carregar clientes', e);
+      console.error('Erro ao carregar clientes do banco central', e);
+      setClients([]);
     } finally {
       setLoading(false);
     }
@@ -229,8 +227,8 @@ export const TSO: React.FC = () => {
               leftEye: fullTSO.prescriptions.left_eye_longe || { sphere: '', cylinder: '', axis: '', dp: '', altura: '', dnp: '' }
             },
             perto: {
-              rightEye: fullTSO.prescriptions.right_eye_perto || { sphere: '', cylinder: '', axis: '', dp: '', altura: '' },
-              leftEye: fullTSO.prescriptions.left_eye_perto || { sphere: '', cylinder: '', axis: '', dp: '', altura: '' }
+              rightEye: fullTSO.prescriptions.right_eye_perto || { sphere: '', cylinder: '', axis: '', dp: '', altura: '', dnp: '' },
+              leftEye: fullTSO.prescriptions.left_eye_perto || { sphere: '', cylinder: '', axis: '', dp: '', altura: '', dnp: '' }
             }
           } : {
             addition: '',
@@ -239,8 +237,8 @@ export const TSO: React.FC = () => {
               leftEye: { sphere: '', cylinder: '', axis: '', dp: '', altura: '', dnp: '' }
             },
             perto: {
-              rightEye: { sphere: '', cylinder: '', axis: '', dp: '', altura: '' },
-              leftEye: { sphere: '', cylinder: '', axis: '', dp: '', altura: '' }
+              rightEye: { sphere: '', cylinder: '', axis: '', dp: '', altura: '', dnp: '' },
+              leftEye: { sphere: '', cylinder: '', axis: '', dp: '', altura: '', dnp: '' }
             }
           },
           frame: {
@@ -499,8 +497,8 @@ export const TSO: React.FC = () => {
               leftEye: { sphere: '', cylinder: '', axis: '', dp: '', altura: '', dnp: '' }
             },
             perto: {
-              rightEye: { sphere: '', cylinder: '', axis: '', dp: '', altura: '' },
-              leftEye: { sphere: '', cylinder: '', axis: '', dp: '', altura: '' }
+              rightEye: { sphere: '', cylinder: '', axis: '', dp: '', altura: '', dnp: '' },
+              leftEye: { sphere: '', cylinder: '', axis: '', dp: '', altura: '', dnp: '' }
             }
           },
           frame: {
@@ -869,255 +867,188 @@ export const TSO: React.FC = () => {
                     {/* Prescrição */}
                     <div>
                       <h4 className="text-lg font-medium text-gray-900 mb-4">Prescrição</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Visão de Longe */}
-                        <div>
-                          <h5 className="font-medium text-gray-700 mb-3">Visão de Longe</h5>
-                          <div className="space-y-3">
-                            <div>
-                              <label className="block text-sm font-medium text-gray-600 mb-1">OD (Olho Direito)</label>
-                              <div className="grid grid-cols-3 gap-2">
-                                <input
-                                  type="number"
-                                  step="0.25"
-                                  className="input text-sm"
-                                  placeholder="Esfera"
-                                  value={tsoForm.prescription.longe.rightEye.sphere}
-                                  onChange={(e) => setTsoForm({
-                                    ...tsoForm,
-                                    prescription: {
-                                      ...tsoForm.prescription,
-                                      longe: {
-                                        ...tsoForm.prescription.longe,
-                                        rightEye: { ...tsoForm.prescription.longe.rightEye, sphere: e.target.value }
-                                      }
-                                    }
-                                  })}
-                                />
-                                <input
-                                  type="number"
-                                  step="0.25"
-                                  className="input text-sm"
-                                  placeholder="Cilindro"
-                                  value={tsoForm.prescription.longe.rightEye.cylinder}
-                                  onChange={(e) => setTsoForm({
-                                    ...tsoForm,
-                                    prescription: {
-                                      ...tsoForm.prescription,
-                                      longe: {
-                                        ...tsoForm.prescription.longe,
-                                        rightEye: { ...tsoForm.prescription.longe.rightEye, cylinder: e.target.value }
-                                      }
-                                    }
-                                  })}
-                                />
-                                <input
-                                  type="number"
-                                  className="input text-sm"
-                                  placeholder="Eixo"
-                                  value={tsoForm.prescription.longe.rightEye.axis}
-                                  onChange={(e) => setTsoForm({
-                                    ...tsoForm,
-                                    prescription: {
-                                      ...tsoForm.prescription,
-                                      longe: {
-                                        ...tsoForm.prescription.longe,
-                                        rightEye: { ...tsoForm.prescription.longe.rightEye, axis: e.target.value }
-                                      }
-                                    }
-                                  })}
-                                />
-                              </div>
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium text-gray-600 mb-1">OE (Olho Esquerdo)</label>
-                              <div className="grid grid-cols-3 gap-2">
-                                <input
-                                  type="number"
-                                  step="0.25"
-                                  className="input text-sm"
-                                  placeholder="Esfera"
-                                  value={tsoForm.prescription.longe.leftEye.sphere}
-                                  onChange={(e) => setTsoForm({
-                                    ...tsoForm,
-                                    prescription: {
-                                      ...tsoForm.prescription,
-                                      longe: {
-                                        ...tsoForm.prescription.longe,
-                                        leftEye: { ...tsoForm.prescription.longe.leftEye, sphere: e.target.value }
-                                      }
-                                    }
-                                  })}
-                                />
-                                <input
-                                  type="number"
-                                  step="0.25"
-                                  className="input text-sm"
-                                  placeholder="Cilindro"
-                                  value={tsoForm.prescription.longe.leftEye.cylinder}
-                                  onChange={(e) => setTsoForm({
-                                    ...tsoForm,
-                                    prescription: {
-                                      ...tsoForm.prescription,
-                                      longe: {
-                                        ...tsoForm.prescription.longe,
-                                        leftEye: { ...tsoForm.prescription.longe.leftEye, cylinder: e.target.value }
-                                      }
-                                    }
-                                  })}
-                                />
-                                <input
-                                  type="number"
-                                  className="input text-sm"
-                                  placeholder="Eixo"
-                                  value={tsoForm.prescription.longe.leftEye.axis}
-                                  onChange={(e) => setTsoForm({
-                                    ...tsoForm,
-                                    prescription: {
-                                      ...tsoForm.prescription,
-                                      longe: {
-                                        ...tsoForm.prescription.longe,
-                                        leftEye: { ...tsoForm.prescription.longe.leftEye, axis: e.target.value }
-                                      }
-                                    }
-                                  })}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Visão de Perto */}
-                        <div>
-                          <h5 className="font-medium text-gray-700 mb-3">Visão de Perto</h5>
-                          <div className="space-y-3">
-                            <div>
-                              <label className="block text-sm font-medium text-gray-600 mb-1">OD (Olho Direito)</label>
-                              <div className="grid grid-cols-3 gap-2">
-                                <input
-                                  type="number"
-                                  step="0.25"
-                                  className="input text-sm"
-                                  placeholder="Esfera"
-                                  value={tsoForm.prescription.perto.rightEye.sphere}
-                                  onChange={(e) => setTsoForm({
-                                    ...tsoForm,
-                                    prescription: {
-                                      ...tsoForm.prescription,
-                                      perto: {
-                                        ...tsoForm.prescription.perto,
-                                        rightEye: { ...tsoForm.prescription.perto.rightEye, sphere: e.target.value }
-                                      }
-                                    }
-                                  })}
-                                />
-                                <input
-                                  type="number"
-                                  step="0.25"
-                                  className="input text-sm"
-                                  placeholder="Cilindro"
-                                  value={tsoForm.prescription.perto.rightEye.cylinder}
-                                  onChange={(e) => setTsoForm({
-                                    ...tsoForm,
-                                    prescription: {
-                                      ...tsoForm.prescription,
-                                      perto: {
-                                        ...tsoForm.prescription.perto,
-                                        rightEye: { ...tsoForm.prescription.perto.rightEye, cylinder: e.target.value }
-                                      }
-                                    }
-                                  })}
-                                />
-                                <input
-                                  type="number"
-                                  className="input text-sm"
-                                  placeholder="Eixo"
-                                  value={tsoForm.prescription.perto.rightEye.axis}
-                                  onChange={(e) => setTsoForm({
-                                    ...tsoForm,
-                                    prescription: {
-                                      ...tsoForm.prescription,
-                                      perto: {
-                                        ...tsoForm.prescription.perto,
-                                        rightEye: { ...tsoForm.prescription.perto.rightEye, axis: e.target.value }
-                                      }
-                                    }
-                                  })}
-                                />
-                              </div>
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium text-gray-600 mb-1">OE (Olho Esquerdo)</label>
-                              <div className="grid grid-cols-3 gap-2">
-                                <input
-                                  type="number"
-                                  step="0.25"
-                                  className="input text-sm"
-                                  placeholder="Esfera"
-                                  value={tsoForm.prescription.perto.leftEye.sphere}
-                                  onChange={(e) => setTsoForm({
-                                    ...tsoForm,
-                                    prescription: {
-                                      ...tsoForm.prescription,
-                                      perto: {
-                                        ...tsoForm.prescription.perto,
-                                        leftEye: { ...tsoForm.prescription.perto.leftEye, sphere: e.target.value }
-                                      }
-                                    }
-                                  })}
-                                />
-                                <input
-                                  type="number"
-                                  step="0.25"
-                                  className="input text-sm"
-                                  placeholder="Cilindro"
-                                  value={tsoForm.prescription.perto.leftEye.cylinder}
-                                  onChange={(e) => setTsoForm({
-                                    ...tsoForm,
-                                    prescription: {
-                                      ...tsoForm.prescription,
-                                      perto: {
-                                        ...tsoForm.prescription.perto,
-                                        leftEye: { ...tsoForm.prescription.perto.leftEye, cylinder: e.target.value }
-                                      }
-                                    }
-                                  })}
-                                />
-                                <input
-                                  type="number"
-                                  className="input text-sm"
-                                  placeholder="Eixo"
-                                  value={tsoForm.prescription.perto.leftEye.axis}
-                                  onChange={(e) => setTsoForm({
-                                    ...tsoForm,
-                                    prescription: {
-                                      ...tsoForm.prescription,
-                                      perto: {
-                                        ...tsoForm.prescription.perto,
-                                        leftEye: { ...tsoForm.prescription.perto.leftEye, axis: e.target.value }
-                                      }
-                                    }
-                                  })}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
                       
-                      <div className="mt-4">
+                      {/* Adição - No topo */}
+                      <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Adição</label>
                         <input
                           type="number"
                           step="0.25"
                           className="input w-32"
-                          placeholder="Ex: 1.50"
+                          placeholder="Ex: 2.25"
                           value={tsoForm.prescription.addition}
                           onChange={(e) => setTsoForm({
                             ...tsoForm,
                             prescription: { ...tsoForm.prescription, addition: e.target.value }
                           })}
                         />
+                      </div>
+
+                      {/* Tabela de Prescrição - Estilo similar ao documento físico */}
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full border border-gray-300 text-sm">
+                          <thead className="bg-gray-100">
+                            <tr>
+                              <th className="border border-gray-300 px-2 py-2 text-left font-medium text-gray-700 w-20"></th>
+                              <th className="border border-gray-300 px-2 py-2 text-center font-medium text-gray-700">Esférico</th>
+                              <th className="border border-gray-300 px-2 py-2 text-center font-medium text-gray-700">Cilíndrico</th>
+                              <th className="border border-gray-300 px-2 py-2 text-center font-medium text-gray-700">Eixo</th>
+                              <th className="border border-gray-300 px-2 py-2 text-center font-medium text-gray-700">D.P.</th>
+                              <th className="border border-gray-300 px-2 py-2 text-center font-medium text-gray-700">Altura</th>
+                              <th className="border border-gray-300 px-2 py-2 text-center font-medium text-gray-700" colSpan={2}>D.N.P.</th>
+                            </tr>
+                            <tr className="bg-gray-50">
+                              <th className="border border-gray-300 px-2 py-1"></th>
+                              <th className="border border-gray-300 px-2 py-1 text-center text-xs text-gray-500">(+/-)</th>
+                              <th className="border border-gray-300 px-2 py-1 text-center text-xs text-gray-500">(+/-)</th>
+                              <th className="border border-gray-300 px-2 py-1 text-center text-xs text-gray-500">(°)</th>
+                              <th className="border border-gray-300 px-2 py-1 text-center text-xs text-gray-500">(mm)</th>
+                              <th className="border border-gray-300 px-2 py-1 text-center text-xs text-gray-500">(mm)</th>
+                              <th className="border border-gray-300 px-2 py-1 text-center text-xs text-gray-500">O.D.</th>
+                              <th className="border border-gray-300 px-2 py-1 text-center text-xs text-gray-500">O.E.</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {/* LONGE */}
+                            <tr className="bg-blue-50">
+                              <td className="border border-gray-300 px-2 py-1 font-medium text-gray-700" colSpan={8}>Longe</td>
+                            </tr>
+                            {/* Longe - OD */}
+                            <tr>
+                              <td className="border border-gray-300 px-2 py-1 font-medium text-gray-600">O.D.</td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" step="0.25" className="input text-sm w-full text-center" placeholder="0.00"
+                                  value={tsoForm.prescription.longe.rightEye.sphere}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, longe: {...tsoForm.prescription.longe, rightEye: {...tsoForm.prescription.longe.rightEye, sphere: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" step="0.25" className="input text-sm w-full text-center" placeholder="0.00"
+                                  value={tsoForm.prescription.longe.rightEye.cylinder}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, longe: {...tsoForm.prescription.longe, rightEye: {...tsoForm.prescription.longe.rightEye, cylinder: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" className="input text-sm w-full text-center" placeholder="0"
+                                  value={tsoForm.prescription.longe.rightEye.axis}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, longe: {...tsoForm.prescription.longe, rightEye: {...tsoForm.prescription.longe.rightEye, axis: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" step="0.5" className="input text-sm w-full text-center" placeholder="0.0"
+                                  value={tsoForm.prescription.longe.rightEye.dp}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, longe: {...tsoForm.prescription.longe, rightEye: {...tsoForm.prescription.longe.rightEye, dp: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" step="0.5" className="input text-sm w-full text-center" placeholder="0.0"
+                                  value={tsoForm.prescription.longe.rightEye.altura}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, longe: {...tsoForm.prescription.longe, rightEye: {...tsoForm.prescription.longe.rightEye, altura: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" step="0.5" className="input text-sm w-full text-center" placeholder="0.0"
+                                  value={tsoForm.prescription.longe.rightEye.dnp}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, longe: {...tsoForm.prescription.longe, rightEye: {...tsoForm.prescription.longe.rightEye, dnp: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1 bg-gray-50"></td>
+                            </tr>
+                            {/* Longe - OE */}
+                            <tr>
+                              <td className="border border-gray-300 px-2 py-1 font-medium text-gray-600">O.E.</td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" step="0.25" className="input text-sm w-full text-center" placeholder="0.00"
+                                  value={tsoForm.prescription.longe.leftEye.sphere}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, longe: {...tsoForm.prescription.longe, leftEye: {...tsoForm.prescription.longe.leftEye, sphere: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" step="0.25" className="input text-sm w-full text-center" placeholder="0.00"
+                                  value={tsoForm.prescription.longe.leftEye.cylinder}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, longe: {...tsoForm.prescription.longe, leftEye: {...tsoForm.prescription.longe.leftEye, cylinder: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" className="input text-sm w-full text-center" placeholder="0"
+                                  value={tsoForm.prescription.longe.leftEye.axis}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, longe: {...tsoForm.prescription.longe, leftEye: {...tsoForm.prescription.longe.leftEye, axis: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" step="0.5" className="input text-sm w-full text-center" placeholder="0.0"
+                                  value={tsoForm.prescription.longe.leftEye.dp}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, longe: {...tsoForm.prescription.longe, leftEye: {...tsoForm.prescription.longe.leftEye, dp: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" step="0.5" className="input text-sm w-full text-center" placeholder="0.0"
+                                  value={tsoForm.prescription.longe.leftEye.altura}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, longe: {...tsoForm.prescription.longe, leftEye: {...tsoForm.prescription.longe.leftEye, altura: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1 bg-gray-50"></td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" step="0.5" className="input text-sm w-full text-center" placeholder="0.0"
+                                  value={tsoForm.prescription.longe.leftEye.dnp}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, longe: {...tsoForm.prescription.longe, leftEye: {...tsoForm.prescription.longe.leftEye, dnp: e.target.value}}}})} />
+                              </td>
+                            </tr>
+                            {/* PERTO */}
+                            <tr className="bg-green-50">
+                              <td className="border border-gray-300 px-2 py-1 font-medium text-gray-700" colSpan={8}>Perto</td>
+                            </tr>
+                            {/* Perto - OD */}
+                            <tr>
+                              <td className="border border-gray-300 px-2 py-1 font-medium text-gray-600">O.D.</td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" step="0.25" className="input text-sm w-full text-center" placeholder="0.00"
+                                  value={tsoForm.prescription.perto.rightEye.sphere}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, perto: {...tsoForm.prescription.perto, rightEye: {...tsoForm.prescription.perto.rightEye, sphere: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" step="0.25" className="input text-sm w-full text-center" placeholder="0.00"
+                                  value={tsoForm.prescription.perto.rightEye.cylinder}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, perto: {...tsoForm.prescription.perto, rightEye: {...tsoForm.prescription.perto.rightEye, cylinder: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" className="input text-sm w-full text-center" placeholder="0"
+                                  value={tsoForm.prescription.perto.rightEye.axis}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, perto: {...tsoForm.prescription.perto, rightEye: {...tsoForm.prescription.perto.rightEye, axis: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" step="0.5" className="input text-sm w-full text-center" placeholder="0.0"
+                                  value={tsoForm.prescription.perto.rightEye.dp}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, perto: {...tsoForm.prescription.perto, rightEye: {...tsoForm.prescription.perto.rightEye, dp: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" step="0.5" className="input text-sm w-full text-center" placeholder="0.0"
+                                  value={tsoForm.prescription.perto.rightEye.altura}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, perto: {...tsoForm.prescription.perto, rightEye: {...tsoForm.prescription.perto.rightEye, altura: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1 bg-gray-50" colSpan={2}></td>
+                            </tr>
+                            {/* Perto - OE */}
+                            <tr>
+                              <td className="border border-gray-300 px-2 py-1 font-medium text-gray-600">O.E.</td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" step="0.25" className="input text-sm w-full text-center" placeholder="0.00"
+                                  value={tsoForm.prescription.perto.leftEye.sphere}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, perto: {...tsoForm.prescription.perto, leftEye: {...tsoForm.prescription.perto.leftEye, sphere: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" step="0.25" className="input text-sm w-full text-center" placeholder="0.00"
+                                  value={tsoForm.prescription.perto.leftEye.cylinder}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, perto: {...tsoForm.prescription.perto, leftEye: {...tsoForm.prescription.perto.leftEye, cylinder: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" className="input text-sm w-full text-center" placeholder="0"
+                                  value={tsoForm.prescription.perto.leftEye.axis}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, perto: {...tsoForm.prescription.perto, leftEye: {...tsoForm.prescription.perto.leftEye, axis: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" step="0.5" className="input text-sm w-full text-center" placeholder="0.0"
+                                  value={tsoForm.prescription.perto.leftEye.dp}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, perto: {...tsoForm.prescription.perto, leftEye: {...tsoForm.prescription.perto.leftEye, dp: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1">
+                                <input type="number" step="0.5" className="input text-sm w-full text-center" placeholder="0.0"
+                                  value={tsoForm.prescription.perto.leftEye.altura}
+                                  onChange={(e) => setTsoForm({...tsoForm, prescription: {...tsoForm.prescription, perto: {...tsoForm.prescription.perto, leftEye: {...tsoForm.prescription.perto.leftEye, altura: e.target.value}}}})} />
+                              </td>
+                              <td className="border border-gray-300 px-1 py-1 bg-gray-50" colSpan={2}></td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </div>
 

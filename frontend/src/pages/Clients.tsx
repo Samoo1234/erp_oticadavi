@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Plus, Search, Edit, Trash2, Eye, Filter, Star, Calendar, DollarSign, FileText, User, Phone, Mail, MapPin, X, Hash } from 'lucide-react';
 import { api } from '../services/api';
+import { buscarClientesCentral, listarClientesCentral, contarClientesCentral } from '../services/supabaseCentral';
 
 interface ClientFormData {
   clientNumber: string;
@@ -21,22 +22,23 @@ interface ClientFormData {
 type Client = {
   id: string;
   name: string;
-  email: string;
+  email?: string;
   phone: string;
-  cpf: string;
-  totalPurchases: number;
-  lastPurchase: string | null;
-  loyaltyPoints: number;
+  cpf?: string;
+  totalPurchases?: number;
+  lastPurchase?: string | null;
+  loyaltyPoints?: number;
   isActive: boolean;
-    address: {
+  address?: {
     street?: string;
+    number?: string;
     neighborhood?: string;
     city?: string;
     state?: string;
     zipCode?: string;
   };
   birthDate?: string | null;
-  gender?: 'M' | 'F' | 'O';
+  gender?: 'M' | 'F' | 'O' | string;
   notes?: string | null;
 };
 
@@ -76,20 +78,26 @@ export const Clients: React.FC = () => {
     lastPurchaseFrom: '',
     lastPurchaseTo: ''
   });
-  // Buscar clientes no backend
+  // Buscar clientes no banco central
   const fetchClients = async () => {
     try {
       setLoading(true);
-      const params: any = { page, limit };
-      if (searchTerm) params.search = searchTerm;
-      if (isActiveFilter) params.isActive = isActiveFilter === 'active' ? 'true' : 'false';
-
-      const response = await api.get('/clients', { params });
-      const payload = response.data?.data;
-      setClients(payload?.clients || []);
-      setTotal(payload?.pagination?.total || 0);
+      
+      if (searchTerm) {
+        // Busca por termo
+        const clientesCentral = await buscarClientesCentral(searchTerm, limit);
+        setClients(clientesCentral);
+        setTotal(clientesCentral.length);
+      } else {
+        // Listar com paginação
+        const { clients: clientesCentral, total: totalClientes } = await listarClientesCentral(page, limit);
+        setClients(clientesCentral);
+        setTotal(totalClientes);
+      }
     } catch (err) {
-      console.error('Erro ao carregar clientes', err);
+      console.error('Erro ao carregar clientes do banco central', err);
+      setClients([]);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
@@ -300,7 +308,7 @@ export const Clients: React.FC = () => {
       phone: client.phone,
       cpf: client.cpf || '',
       birthDate: client.birthDate || '',
-      gender: client.gender || 'M',
+      gender: (client.gender as 'M' | 'F' | 'O') || 'M',
       address: client.address?.street || '',
       neighborhood: client.address?.neighborhood || '',
       city: client.address?.city || '',
@@ -585,7 +593,7 @@ export const Clients: React.FC = () => {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Faturamento Total</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  R$ {clients.reduce((sum, c) => sum + c.totalPurchases, 0).toFixed(2)}
+                  R$ {clients.reduce((sum, c) => sum + (c.totalPurchases || 0), 0).toFixed(2)}
                 </p>
               </div>
             </div>
@@ -601,7 +609,7 @@ export const Clients: React.FC = () => {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Pontos Fidelidade</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {clients.reduce((sum, c) => sum + c.loyaltyPoints, 0)}
+                  {clients.reduce((sum, c) => sum + (c.loyaltyPoints || 0), 0)}
                 </p>
               </div>
             </div>
@@ -646,7 +654,7 @@ export const Clients: React.FC = () => {
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
                   <MapPin className="h-4 w-4 mr-2" />
-                  {client.address.city}, {client.address.state}
+                  {client.address?.city || '-'}, {client.address?.state || '-'}
                 </div>
               </div>
               
@@ -654,14 +662,14 @@ export const Clients: React.FC = () => {
                 <div>
                   <p className="text-xs font-medium text-gray-500">Total Compras</p>
                   <p className="text-sm font-semibold text-gray-900">
-                    R$ {client.totalPurchases.toFixed(2)}
+                    R$ {(client.totalPurchases || 0).toFixed(2)}
                   </p>
                 </div>
                 <div>
                   <p className="text-xs font-medium text-gray-500">Pontos Fidelidade</p>
                   <p className="text-sm font-semibold text-gray-900 flex items-center">
                     <Star className="h-3 w-3 mr-1 text-yellow-500" />
-                    {client.loyaltyPoints}
+                    {client.loyaltyPoints || 0}
                   </p>
                 </div>
               </div>
